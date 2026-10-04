@@ -16,12 +16,12 @@ The generated Prisma client is TypeScript and uses runtime namespaces. Node's bu
 
 ## Local setup
 
-Do not commit a filled `.env`. The example file leaves every value empty on purpose. No database name, user, password, or port was chosen.
+Do not commit a filled `.env`. Copy `.env.example`. Local Postgres is database `quote_manager_db`, user `user`, password `postgres`, port `5432`.
 
 1. Install dependencies: `npm install`
 2. Copy `.env.example` to `.env`
-3. Choose your own `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, and `POSTGRES_PORT`
-4. Set `DATABASE_URL` to a Postgres URL that uses those values. This README does not include a sample URL.
+3. Local `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, and `POSTGRES_PORT` are already set in the example
+4. `DATABASE_URL` in the example points at that local database
 5. Set `PORT` to the TCP port you want this process to listen on. Port 8080 is not a requirement. The Flutter app's `API_BASE_URL` is a client setting.
 6. Set `JWT_SIGNING_KEY` to a secret of at least 32 characters
 7. Start Postgres: `docker compose up -d`

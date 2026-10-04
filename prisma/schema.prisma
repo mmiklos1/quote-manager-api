@@ -21,10 +21,12 @@ datasource db {
 }
 
 model Company {
-  id        String   @id @default(uuid()) @db.Uuid
-  name      String
-  seatLimit Int      @map("seat_limit")
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  id              String   @id @default(uuid()) @db.Uuid
+  name            String
+  seatLimit       Int      @map("seat_limit")
+  /// Nullable until ISO code vs country name is chosen. F-007 reads it for currency.
+  countryOfOrigin String?  @map("country_of_origin")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   companyUsers CompanyUser[]
   permissions  Permission[]
@@ -33,10 +35,12 @@ model Company {
 }
 
 model User {
-  id           String   @id @default(uuid()) @db.Uuid
-  email        String   @unique
-  isSuperAdmin Boolean  @default(false) @map("is_super_admin")
-  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  id                 String   @id @default(uuid()) @db.Uuid
+  email              String   @unique
+  isSuperAdmin       Boolean  @default(false) @map("is_super_admin")
+  /// True when a license included a temporary password. Default false covers SSO and existing rows.
+  mustChangePassword Boolean  @default(false) @map("must_change_password")
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   companyUsers      CompanyUser[]
   userPassword      UserPassword?
