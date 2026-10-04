@@ -24,12 +24,14 @@ model Company {
   id              String   @id @default(uuid()) @db.Uuid
   name            String
   seatLimit       Int      @map("seat_limit")
-  /// Nullable until ISO code vs country name is chosen. F-007 reads it for currency.
+  /// ISO 3166-1 alpha-2. Null when unset; catalog writes then cannot resolve a currency.
   countryOfOrigin String?  @map("country_of_origin")
   createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  companyUsers CompanyUser[]
-  permissions  Permission[]
+  companyUsers         CompanyUser[]
+  permissions          Permission[]
+  catalogItems         CatalogItem[]
+  catalogRequirements  CatalogRequirement[]
 
   @@map("companies")
 }
@@ -163,4 +165,51 @@ model PasswordReset {
 
   @@index([userId])
   @@map("password_resets")
+}
+
+// Stage 1 sales catalog (F-007). UI Type is not a column.
+// The unique identity includes soft-deleted rows, so a deleted item still holds its key.
+// catalog_requirements also has a SQL check that the two item ids differ.
+
+model CatalogItem {
+  id                String    @id @default(uuid()) @db.Uuid
+  companyId         String    @map("company_id") @db.Uuid
+  name              String
+  description       String
+  manufacturer      String
+  model             String
+  year              Int
+  rentalRatePerDay  Decimal   @map("rental_rate_per_day") @db.Decimal(12, 2)
+  imageKey          String    @map("image_key")
+  derivativeKey     String?   @map("derivative_key")
+  metadata          Json?     @db.JsonB
+  deletedAt         DateTime? @map("deleted_at") @db.Timestamptz(6)
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  company      Company              @relation(fields: [companyId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  requiring    CatalogRequirement[] @relation("CatalogRequiring")
+  requiredBy   CatalogRequirement[] @relation("CatalogRequired")
+
+  @@unique([companyId, manufacturer, model, year, name])
+  @@index([companyId, deletedAt])
+  @@map("catalog_items")
+}
+
+model CatalogRequirement {
+  id               String    @id @default(uuid()) @db.Uuid
+  companyId        String    @map("company_id") @db.Uuid
+  requiringItemId  String    @map("requiring_item_id") @db.Uuid
+  requiredItemId   String    @map("required_item_id") @db.Uuid
+  deletedAt        DateTime? @map("deleted_at") @db.Timestamptz(6)
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  company        Company     @relation(fields: [companyId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  requiringItem  CatalogItem @relation("CatalogRequiring", fields: [requiringItemId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  requiredItem   CatalogItem @relation("CatalogRequired", fields: [requiredItemId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([requiringItemId, requiredItemId])
+  @@index([companyId, deletedAt])
+  @@index([requiredItemId])
+  @@map("catalog_requirements")
 }

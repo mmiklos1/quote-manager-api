@@ -21,6 +21,14 @@ export const ErrorClass = {
   unknownCompany: 'unknown_company',
   unknownMembership: 'unknown_membership',
   notFound: 'not_found',
+  catalogForbidden: 'catalog_forbidden',
+  catalogNotFound: 'catalog_not_found',
+  catalogDuplicate: 'catalog_duplicate',
+  catalogCycle: 'catalog_cycle',
+  catalogValidation: 'catalog_validation',
+  catalogImageTooLarge: 'catalog_image_too_large',
+  catalogImageRejected: 'catalog_image_rejected',
+  countryOfOriginMissing: 'country_of_origin_missing',
 };
 
 /**

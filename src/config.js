@@ -7,6 +7,9 @@ export function readConfig(env = process.env) {
     googleClientSecret: env.GOOGLE_CLIENT_SECRET ?? '',
     microsoftClientId: env.MICROSOFT_CLIENT_ID ?? '',
     microsoftClientSecret: env.MICROSOFT_CLIENT_SECRET ?? '',
+    assetStorage: env.ASSET_STORAGE === 's3' ? 's3' : 'local',
+    s3Bucket: env.S3_BUCKET ?? '',
+    s3Region: env.S3_REGION ?? '',
   };
 }
 
