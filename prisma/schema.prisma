@@ -1,0 +1,162 @@
+// Identity records for F-003.
+// The column list in the spec is the list. Do not add profile fields,
+// two-factor columns, or keys inside Permission.access.
+//
+// SQL-only rules live in the first migration and are not representable here:
+// one is_admin row per company (partial unique index), status and provider
+// checks, the normalized-email check, and the same-company permission trigger.
+// Do not apply a later migrate diff that drops those.
+
+generator client {
+  provider               = "prisma-client"
+  output                 = "../src/generated/prisma"
+  runtime                = "nodejs"
+  moduleFormat           = "esm"
+  generatedFileExtension = "ts"
+  importFileExtension    = "ts"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Company {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  seatLimit Int      @map("seat_limit")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  companyUsers CompanyUser[]
+  permissions  Permission[]
+
+  @@map("companies")
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique
+  isSuperAdmin Boolean  @default(false) @map("is_super_admin")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  companyUsers      CompanyUser[]
+  userPassword      UserPassword?
+  passwordHistories PasswordHistory[]
+  linkedLogins      LinkedLogin[]
+  sessions          Session[]
+  passwordResets    PasswordReset[]
+
+  @@map("users")
+}
+
+model CompanyUser {
+  id            String    @id @default(uuid()) @db.Uuid
+  companyId     String    @map("company_id") @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
+  status        String
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  deactivatedAt DateTime? @map("deactivated_at") @db.Timestamptz(6)
+
+  company     Company                 @relation(fields: [companyId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  user        User                    @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  permissions CompanyUserPermission[]
+  sessions    Session[]
+
+  @@unique([companyId, userId])
+  @@index([companyId, status])
+  @@map("company_users")
+}
+
+model Permission {
+  id        String   @id @default(uuid()) @db.Uuid
+  companyId String   @map("company_id") @db.Uuid
+  name      String
+  isAdmin   Boolean  @default(false) @map("is_admin")
+  /// Opaque jsonb. Do not invent keys. Null means no document is stored.
+  access    Json?    @db.JsonB
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  company Company                 @relation(fields: [companyId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  grants  CompanyUserPermission[]
+
+  @@unique([companyId, name])
+  @@index([companyId])
+  @@map("permissions")
+}
+
+model CompanyUserPermission {
+  id            String @id @default(uuid()) @db.Uuid
+  companyUserId String @map("company_user_id") @db.Uuid
+  permissionId  String @map("permission_id") @db.Uuid
+
+  companyUser CompanyUser @relation(fields: [companyUserId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  permission  Permission  @relation(fields: [permissionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([companyUserId, permissionId])
+  @@map("company_user_permissions")
+}
+
+model UserPassword {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @unique @map("user_id") @db.Uuid
+  passwordHash String   @map("password_hash")
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@map("user_passwords")
+}
+
+model PasswordHistory {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("password_histories")
+}
+
+model LinkedLogin {
+  id              String @id @default(uuid()) @db.Uuid
+  userId          String @map("user_id") @db.Uuid
+  provider        String
+  providerSubject String @map("provider_subject")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([provider, providerSubject])
+  @@index([userId])
+  @@map("linked_logins")
+}
+
+model Session {
+  id            String    @id @default(uuid()) @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
+  companyUserId String    @map("company_user_id") @db.Uuid
+  tokenHash     String    @unique @map("token_hash")
+  expiresAt     DateTime  @map("expires_at") @db.Timestamptz(6)
+  revokedAt     DateTime? @map("revoked_at") @db.Timestamptz(6)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  companyUser CompanyUser @relation(fields: [companyUserId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([companyUserId])
+  @@index([userId])
+  @@map("sessions")
+}
+
+model PasswordReset {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
+  usedAt    DateTime? @map("used_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([userId])
+  @@map("password_resets")
+}

@@ -1,0 +1,16 @@
+# Local Postgres only. Database name, user, password, and host port are required
+# and have no defaults. Fill them in .env. Do not commit that file.
+services:
+  postgres:
+    image: postgres:18.4
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is unset}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is unset}
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is unset}
+    ports:
+      - "${POSTGRES_PORT:?POSTGRES_PORT is unset}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+
+volumes:
+  pgdata:
