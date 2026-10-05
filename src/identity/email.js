@@ -1,4 +1,4 @@
-import { ApiError, ErrorClass } from './errors.js';
+import { ApiError, ErrorClass } from '../errors.js';
 
 /**
  * Trim plus lowercase of the whole address.
