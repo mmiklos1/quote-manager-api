@@ -19,6 +19,13 @@ export const PASSWORD_HASH_PARAMETERS = {
   hashLength: 32,
 };
 
+/**
+ * Fixed Argon2id hash used when no stored hash exists.
+ * Verification then takes the same work as a real password check.
+ * This is not a password for any user.
+ */
+export const DUMMY_PASSWORD_HASH = '$argon2id$v=19$m=19456,p=1,t=2$qa6u/TuACfM6AKwLkhTwrQ$1R/6KBCNRBEyivVTfe8f7TQWTTZadh8zOddYrrGzpCI';
+
 export async function hashPassword(password) {
   return argon2.hash(password, {
     type: argon2.argon2id,

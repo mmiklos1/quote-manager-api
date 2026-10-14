@@ -1,7 +1,17 @@
 import { soleCompanyId } from '../analytics/events.js';
 import { ApiError, ErrorClass } from '../errors.js';
 import { normalizeEmail } from '../identity/email.js';
-import { verifyPassword } from '../passwords/hash.js';
+import { DUMMY_PASSWORD_HASH, verifyPassword } from '../passwords/hash.js';
+
+async function matchesStoredPassword(user, password) {
+  const candidate = typeof password === 'string' ? password : '';
+  const stored = user?.userPassword?.passwordHash;
+  if (typeof stored === 'string' && stored.length > 0) {
+    return verifyPassword(stored, candidate);
+  }
+  await verifyPassword(DUMMY_PASSWORD_HASH, candidate);
+  return false;
+}
 
 function activeMemberships(companyUsers) {
   return companyUsers
@@ -25,6 +35,8 @@ export async function verifyPasswordLogin(prisma, analytics, { email, password }
     },
   });
 
+  const passwordMatches = await matchesStoredPassword(user, password);
+
   if (!user) {
     analytics.loginFailed({
       method: 'password',
@@ -43,9 +55,6 @@ export async function verifyPasswordLogin(prisma, analytics, { email, password }
     throw new ApiError(ErrorClass.inactiveMembership);
   }
 
-  const passwordMatches = user.userPassword
-    ? await verifyPassword(user.userPassword.passwordHash, password)
-    : false;
   if (!passwordMatches) {
     analytics.loginFailed({
       method: 'password',

@@ -20,7 +20,7 @@ async function request(path) {
   }
 }
 
-test('named auth routes are not mounted', async () => {
+test('login and authenticate stay unmounted until a database is configured', async () => {
   for (const path of ['/api/v1/login', '/api/v1/authenticate']) {
     const response = await request(path);
     assert.equal(response.status, 404);

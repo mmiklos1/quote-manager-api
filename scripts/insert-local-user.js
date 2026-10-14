@@ -11,6 +11,9 @@ import { hashPassword } from '../src/passwords/hash.js';
 // Usage, from this repo, after migrations:
 //   node scripts/insert-local-user.js --email user@test.test --password password1
 //
+// Login also requires an active company_users row for this user.
+// Attach one with: node scripts/insert-local-company.js
+//
 // Reads DATABASE_URL from the environment or from .env.
 
 function readArgs(argv) {

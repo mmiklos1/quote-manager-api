@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { PASSWORD_HASH_PARAMETERS, hashPassword, verifyPassword } from '../src/passwords/hash.js';
+import { DUMMY_PASSWORD_HASH, PASSWORD_HASH_PARAMETERS, hashPassword, verifyPassword } from '../src/passwords/hash.js';
 import { passwordRejectionClass } from '../src/passwords/policy.js';
 
 test('password rules require 8 characters, a number, and a non-letter non-number', () => {
@@ -20,6 +20,10 @@ test('argon2id parameters are recorded on the hasher', () => {
   assert.equal(PASSWORD_HASH_PARAMETERS.timeCost, 2);
   assert.equal(PASSWORD_HASH_PARAMETERS.parallelism, 1);
   assert.equal(PASSWORD_HASH_PARAMETERS.hashLength, 32);
+});
+
+test('the missing-account hash uses the same argon2id parameters', () => {
+  assert.match(DUMMY_PASSWORD_HASH, /^\$argon2id\$v=19\$m=19456,p=1,t=2\$/);
 });
 
 test('hashPassword round-trips and does not store the plaintext', async () => {

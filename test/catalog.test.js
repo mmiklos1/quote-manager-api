@@ -5,7 +5,7 @@ import { requirementWouldCycle } from '../src/catalog/cycle.js';
 import { currencyForCountry } from '../src/catalog/currency.js';
 import { decodeImage, LOCAL_IMAGE_KEY, MAX_IMAGE_BYTES, storeCatalogImage } from '../src/catalog/images.js';
 import { createCatalogService } from '../src/catalog/items.js';
-import { accessTokenFromCookie } from '../src/catalog/routes.js';
+import { accessTokenFromCookie, accessTokenFromRequest } from '../src/catalog/routes.js';
 import { ApiError, ErrorClass } from '../src/errors.js';
 
 test('currency uses the company country code', () => {
@@ -65,6 +65,16 @@ test('an image over 10 MB is rejected before storage', () => {
 test('the access token is read from the cookie and not from another name', () => {
   assert.equal(accessTokenFromCookie('theme=light; access_token=abc%3D'), 'abc=');
   assert.equal(accessTokenFromCookie('session=nope'), '');
+});
+
+test('a bearer token is accepted and preferred over the cookie', () => {
+  assert.equal(accessTokenFromRequest({
+    headers: { authorization: 'Bearer jwt-1', cookie: 'access_token=cookie-1' },
+  }), 'jwt-1');
+  assert.equal(accessTokenFromRequest({
+    headers: { cookie: 'access_token=cookie-1' },
+  }), 'cookie-1');
+  assert.equal(accessTokenFromRequest({ headers: {} }), '');
 });
 
 function memoryPrisma(seed) {

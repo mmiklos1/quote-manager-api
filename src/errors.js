@@ -1,6 +1,10 @@
 export const ErrorClass = {
   unknownEmail: 'unknown_email',
   badPassword: 'bad_password',
+  invalidCredentials: 'invalid_credentials',
+  rateLimited: 'rate_limited',
+  invalidRequest: 'invalid_request',
+  internal: 'internal',
   inactiveMembership: 'inactive_membership',
   unverifiedProviderEmail: 'unverified_provider_email',
   providerSubjectConflict: 'provider_subject_conflict',
@@ -37,11 +41,14 @@ export const ErrorClass = {
  * See docs/features/B-012-rejection-errors/README.md.
  */
 export class ApiError extends Error {
-  constructor(errorClass) {
+  constructor(errorClass, message) {
     super(errorClass);
     this.name = 'ApiError';
     this.errorClass = errorClass;
     this.shape = { error: { code: 'rejected', class: errorClass } };
+    if (typeof message === 'string' && message.length > 0) {
+      this.shape.error.message = message;
+    }
   }
 }
 

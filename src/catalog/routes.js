@@ -23,6 +23,22 @@ const STATUS = {
   [ErrorClass.countryOfOriginMissing]: 422,
 };
 
+export function accessTokenFromAuthorization(header) {
+  if (typeof header !== 'string') {
+    return '';
+  }
+  const match = /^Bearer\s+(\S+)\s*$/i.exec(header);
+  return match ? match[1] : '';
+}
+
+export function accessTokenFromRequest(req) {
+  const bearer = accessTokenFromAuthorization(req.headers?.authorization);
+  if (bearer) {
+    return bearer;
+  }
+  return accessTokenFromCookie(req.headers?.cookie);
+}
+
 export function accessTokenFromCookie(cookieHeader) {
   if (typeof cookieHeader !== 'string') {
     return '';
@@ -54,7 +70,7 @@ function catalogAnalytics(logger) {
 }
 
 async function defaultAuthenticate({ prisma, config }, req) {
-  const token = accessTokenFromCookie(req.headers.cookie);
+  const token = accessTokenFromRequest(req);
   const session = await validateAccessToken(prisma, {
     token,
     signingKey: config.jwtSigningKey,

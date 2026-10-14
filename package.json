@@ -10,7 +10,8 @@
     "start": "node --import tsx src/server.js",
     "test": "node --import tsx --test",
     "prisma:generate": "prisma generate",
-    "user:insert": "node scripts/insert-local-user.js"
+    "user:insert": "node scripts/insert-local-user.js",
+    "company:insert": "node scripts/insert-local-company.js"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.10.0",

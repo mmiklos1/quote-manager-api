@@ -31,9 +31,9 @@ Do not commit a filled `.env`. Copy `.env.example`. Local Postgres is database `
 
 HTTPS is required wherever this API is hosted. Terminate TLS at the host. This process speaks HTTP. Local Postgres does not need a public certificate. There is no production deploy in this repo.
 
-`POST /api/v1/login` and `POST /api/v1/authenticate` are the names the client will use. They are not mounted. Until that JSON is wired, tests call the functions in `src/`.
+`POST /api/v1/login` accepts `{ "email", "password" }` and, when that email has one active company, returns a one-week JWT. The same token is set as an `HttpOnly` `access_token` cookie. An email with two active companies gets `selectionRequired` and no token until the request also includes `companyUserId`. A failed password check returns `{ "error": { "code": "rejected", "class": "invalid_credentials", "message": "Invalid email or password" } }`. `POST /api/v1/authenticate` is still not mounted.
 
-Catalog routes are mounted when `DATABASE_URL` is set. They live under `/api/v1/companies/:companyId/catalog-items`. The caller sends the access token in an `access_token` cookie. `ASSET_STORAGE=local` stores `local-stub` and does not keep image bytes. `ASSET_STORAGE=s3` stores the original, a 1040 crop, and a 520 derivative.
+Catalog routes are mounted when `DATABASE_URL` is set. They live under `/api/v1/companies/:companyId/catalog-items`. The caller sends the access token in an `Authorization: Bearer` header or an `access_token` cookie. `ASSET_STORAGE=local` stores `local-stub` and does not keep image bytes. `ASSET_STORAGE=s3` stores the original, a 1040 crop, and a 520 derivative.
 
 ## Tests
 
