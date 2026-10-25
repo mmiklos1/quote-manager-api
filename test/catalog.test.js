@@ -238,6 +238,7 @@ test('write:catalog can create an item and a duplicate is rejected', async () =>
     type: 'Audio',
   });
   assert.equal(created.currency, 'USD');
+  assert.equal(created.unitCount, 1);
   assert.equal(created.imageKey, LOCAL_IMAGE_KEY);
   assert.equal(created.metadata.color, 'black');
   assert.equal(state.items[0].type, undefined);
@@ -255,6 +256,32 @@ test('write:catalog can create an item and a duplicate is rejected', async () =>
       rentalRatePerDay: '10',
     }),
     (error) => error instanceof ApiError && error.errorClass === ErrorClass.catalogDuplicate,
+  );
+});
+
+test('unit count defaults to 1 and rejects a negative count', async () => {
+  const { service } = serviceFor(managerSeed());
+  const created = await service.create('co-1', manager, {
+    name: 'Titan',
+    description: 'Tube',
+    manufacturer: 'Astera',
+    model: 'Titan',
+    year: 2024,
+    rentalRatePerDay: '40',
+    unitCount: 8,
+  });
+  assert.equal(created.unitCount, 8);
+  await assert.rejects(
+    () => service.create('co-1', manager, {
+      name: 'Other',
+      description: 'Tube',
+      manufacturer: 'Astera',
+      model: 'Titan',
+      year: 2025,
+      rentalRatePerDay: '40',
+      unitCount: -1,
+    }),
+    (error) => error instanceof ApiError && error.errorClass === ErrorClass.catalogValidation,
   );
 });
 

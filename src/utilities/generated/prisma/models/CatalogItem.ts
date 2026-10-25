@@ -28,11 +28,13 @@ export type AggregateCatalogItem = {
 
 export type CatalogItemAvgAggregateOutputType = {
   year: number | null
+  unitCount: number | null
   rentalRatePerDay: runtime.Decimal | null
 }
 
 export type CatalogItemSumAggregateOutputType = {
   year: number | null
+  unitCount: number | null
   rentalRatePerDay: runtime.Decimal | null
 }
 
@@ -44,6 +46,7 @@ export type CatalogItemMinAggregateOutputType = {
   manufacturer: string | null
   model: string | null
   year: number | null
+  unitCount: number | null
   rentalRatePerDay: runtime.Decimal | null
   imageKey: string | null
   derivativeKey: string | null
@@ -60,6 +63,7 @@ export type CatalogItemMaxAggregateOutputType = {
   manufacturer: string | null
   model: string | null
   year: number | null
+  unitCount: number | null
   rentalRatePerDay: runtime.Decimal | null
   imageKey: string | null
   derivativeKey: string | null
@@ -76,6 +80,7 @@ export type CatalogItemCountAggregateOutputType = {
   manufacturer: number
   model: number
   year: number
+  unitCount: number
   rentalRatePerDay: number
   imageKey: number
   derivativeKey: number
@@ -89,11 +94,13 @@ export type CatalogItemCountAggregateOutputType = {
 
 export type CatalogItemAvgAggregateInputType = {
   year?: true
+  unitCount?: true
   rentalRatePerDay?: true
 }
 
 export type CatalogItemSumAggregateInputType = {
   year?: true
+  unitCount?: true
   rentalRatePerDay?: true
 }
 
@@ -105,6 +112,7 @@ export type CatalogItemMinAggregateInputType = {
   manufacturer?: true
   model?: true
   year?: true
+  unitCount?: true
   rentalRatePerDay?: true
   imageKey?: true
   derivativeKey?: true
@@ -121,6 +129,7 @@ export type CatalogItemMaxAggregateInputType = {
   manufacturer?: true
   model?: true
   year?: true
+  unitCount?: true
   rentalRatePerDay?: true
   imageKey?: true
   derivativeKey?: true
@@ -137,6 +146,7 @@ export type CatalogItemCountAggregateInputType = {
   manufacturer?: true
   model?: true
   year?: true
+  unitCount?: true
   rentalRatePerDay?: true
   imageKey?: true
   derivativeKey?: true
@@ -241,6 +251,7 @@ export type CatalogItemGroupByOutputType = {
   manufacturer: string
   model: string
   year: number
+  unitCount: number
   rentalRatePerDay: runtime.Decimal
   imageKey: string
   derivativeKey: string | null
@@ -281,6 +292,7 @@ export type CatalogItemWhereInput = {
   manufacturer?: Prisma.StringFilter<"CatalogItem"> | string
   model?: Prisma.StringFilter<"CatalogItem"> | string
   year?: Prisma.IntFilter<"CatalogItem"> | number
+  unitCount?: Prisma.IntFilter<"CatalogItem"> | number
   rentalRatePerDay?: Prisma.DecimalFilter<"CatalogItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey?: Prisma.StringFilter<"CatalogItem"> | string
   derivativeKey?: Prisma.StringNullableFilter<"CatalogItem"> | string | null
@@ -301,6 +313,7 @@ export type CatalogItemOrderByWithRelationInput = {
   manufacturer?: Prisma.SortOrder
   model?: Prisma.SortOrder
   year?: Prisma.SortOrder
+  unitCount?: Prisma.SortOrder
   rentalRatePerDay?: Prisma.SortOrder
   imageKey?: Prisma.SortOrder
   derivativeKey?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -325,6 +338,7 @@ export type CatalogItemWhereUniqueInput = Prisma.AtLeast<{
   manufacturer?: Prisma.StringFilter<"CatalogItem"> | string
   model?: Prisma.StringFilter<"CatalogItem"> | string
   year?: Prisma.IntFilter<"CatalogItem"> | number
+  unitCount?: Prisma.IntFilter<"CatalogItem"> | number
   rentalRatePerDay?: Prisma.DecimalFilter<"CatalogItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey?: Prisma.StringFilter<"CatalogItem"> | string
   derivativeKey?: Prisma.StringNullableFilter<"CatalogItem"> | string | null
@@ -345,6 +359,7 @@ export type CatalogItemOrderByWithAggregationInput = {
   manufacturer?: Prisma.SortOrder
   model?: Prisma.SortOrder
   year?: Prisma.SortOrder
+  unitCount?: Prisma.SortOrder
   rentalRatePerDay?: Prisma.SortOrder
   imageKey?: Prisma.SortOrder
   derivativeKey?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -370,6 +385,7 @@ export type CatalogItemScalarWhereWithAggregatesInput = {
   manufacturer?: Prisma.StringWithAggregatesFilter<"CatalogItem"> | string
   model?: Prisma.StringWithAggregatesFilter<"CatalogItem"> | string
   year?: Prisma.IntWithAggregatesFilter<"CatalogItem"> | number
+  unitCount?: Prisma.IntWithAggregatesFilter<"CatalogItem"> | number
   rentalRatePerDay?: Prisma.DecimalWithAggregatesFilter<"CatalogItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey?: Prisma.StringWithAggregatesFilter<"CatalogItem"> | string
   derivativeKey?: Prisma.StringNullableWithAggregatesFilter<"CatalogItem"> | string | null
@@ -386,6 +402,7 @@ export type CatalogItemCreateInput = {
   manufacturer: string
   model: string
   year: number
+  unitCount?: number
   rentalRatePerDay: runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey: string
   derivativeKey?: string | null
@@ -406,6 +423,7 @@ export type CatalogItemUncheckedCreateInput = {
   manufacturer: string
   model: string
   year: number
+  unitCount?: number
   rentalRatePerDay: runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey: string
   derivativeKey?: string | null
@@ -424,6 +442,7 @@ export type CatalogItemUpdateInput = {
   manufacturer?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   year?: Prisma.IntFieldUpdateOperationsInput | number
+  unitCount?: Prisma.IntFieldUpdateOperationsInput | number
   rentalRatePerDay?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey?: Prisma.StringFieldUpdateOperationsInput | string
   derivativeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -444,6 +463,7 @@ export type CatalogItemUncheckedUpdateInput = {
   manufacturer?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   year?: Prisma.IntFieldUpdateOperationsInput | number
+  unitCount?: Prisma.IntFieldUpdateOperationsInput | number
   rentalRatePerDay?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey?: Prisma.StringFieldUpdateOperationsInput | string
   derivativeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -463,6 +483,7 @@ export type CatalogItemCreateManyInput = {
   manufacturer: string
   model: string
   year: number
+  unitCount?: number
   rentalRatePerDay: runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey: string
   derivativeKey?: string | null
@@ -479,6 +500,7 @@ export type CatalogItemUpdateManyMutationInput = {
   manufacturer?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   year?: Prisma.IntFieldUpdateOperationsInput | number
+  unitCount?: Prisma.IntFieldUpdateOperationsInput | number
   rentalRatePerDay?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey?: Prisma.StringFieldUpdateOperationsInput | string
   derivativeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -496,6 +518,7 @@ export type CatalogItemUncheckedUpdateManyInput = {
   manufacturer?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   year?: Prisma.IntFieldUpdateOperationsInput | number
+  unitCount?: Prisma.IntFieldUpdateOperationsInput | number
   rentalRatePerDay?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey?: Prisma.StringFieldUpdateOperationsInput | string
   derivativeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -531,6 +554,7 @@ export type CatalogItemCountOrderByAggregateInput = {
   manufacturer?: Prisma.SortOrder
   model?: Prisma.SortOrder
   year?: Prisma.SortOrder
+  unitCount?: Prisma.SortOrder
   rentalRatePerDay?: Prisma.SortOrder
   imageKey?: Prisma.SortOrder
   derivativeKey?: Prisma.SortOrder
@@ -542,6 +566,7 @@ export type CatalogItemCountOrderByAggregateInput = {
 
 export type CatalogItemAvgOrderByAggregateInput = {
   year?: Prisma.SortOrder
+  unitCount?: Prisma.SortOrder
   rentalRatePerDay?: Prisma.SortOrder
 }
 
@@ -553,6 +578,7 @@ export type CatalogItemMaxOrderByAggregateInput = {
   manufacturer?: Prisma.SortOrder
   model?: Prisma.SortOrder
   year?: Prisma.SortOrder
+  unitCount?: Prisma.SortOrder
   rentalRatePerDay?: Prisma.SortOrder
   imageKey?: Prisma.SortOrder
   derivativeKey?: Prisma.SortOrder
@@ -569,6 +595,7 @@ export type CatalogItemMinOrderByAggregateInput = {
   manufacturer?: Prisma.SortOrder
   model?: Prisma.SortOrder
   year?: Prisma.SortOrder
+  unitCount?: Prisma.SortOrder
   rentalRatePerDay?: Prisma.SortOrder
   imageKey?: Prisma.SortOrder
   derivativeKey?: Prisma.SortOrder
@@ -579,6 +606,7 @@ export type CatalogItemMinOrderByAggregateInput = {
 
 export type CatalogItemSumOrderByAggregateInput = {
   year?: Prisma.SortOrder
+  unitCount?: Prisma.SortOrder
   rentalRatePerDay?: Prisma.SortOrder
 }
 
@@ -672,6 +700,7 @@ export type CatalogItemCreateWithoutCompanyInput = {
   manufacturer: string
   model: string
   year: number
+  unitCount?: number
   rentalRatePerDay: runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey: string
   derivativeKey?: string | null
@@ -690,6 +719,7 @@ export type CatalogItemUncheckedCreateWithoutCompanyInput = {
   manufacturer: string
   model: string
   year: number
+  unitCount?: number
   rentalRatePerDay: runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey: string
   derivativeKey?: string | null
@@ -738,6 +768,7 @@ export type CatalogItemScalarWhereInput = {
   manufacturer?: Prisma.StringFilter<"CatalogItem"> | string
   model?: Prisma.StringFilter<"CatalogItem"> | string
   year?: Prisma.IntFilter<"CatalogItem"> | number
+  unitCount?: Prisma.IntFilter<"CatalogItem"> | number
   rentalRatePerDay?: Prisma.DecimalFilter<"CatalogItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey?: Prisma.StringFilter<"CatalogItem"> | string
   derivativeKey?: Prisma.StringNullableFilter<"CatalogItem"> | string | null
@@ -754,6 +785,7 @@ export type CatalogItemCreateWithoutRequiringInput = {
   manufacturer: string
   model: string
   year: number
+  unitCount?: number
   rentalRatePerDay: runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey: string
   derivativeKey?: string | null
@@ -773,6 +805,7 @@ export type CatalogItemUncheckedCreateWithoutRequiringInput = {
   manufacturer: string
   model: string
   year: number
+  unitCount?: number
   rentalRatePerDay: runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey: string
   derivativeKey?: string | null
@@ -795,6 +828,7 @@ export type CatalogItemCreateWithoutRequiredByInput = {
   manufacturer: string
   model: string
   year: number
+  unitCount?: number
   rentalRatePerDay: runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey: string
   derivativeKey?: string | null
@@ -814,6 +848,7 @@ export type CatalogItemUncheckedCreateWithoutRequiredByInput = {
   manufacturer: string
   model: string
   year: number
+  unitCount?: number
   rentalRatePerDay: runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey: string
   derivativeKey?: string | null
@@ -847,6 +882,7 @@ export type CatalogItemUpdateWithoutRequiringInput = {
   manufacturer?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   year?: Prisma.IntFieldUpdateOperationsInput | number
+  unitCount?: Prisma.IntFieldUpdateOperationsInput | number
   rentalRatePerDay?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey?: Prisma.StringFieldUpdateOperationsInput | string
   derivativeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -866,6 +902,7 @@ export type CatalogItemUncheckedUpdateWithoutRequiringInput = {
   manufacturer?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   year?: Prisma.IntFieldUpdateOperationsInput | number
+  unitCount?: Prisma.IntFieldUpdateOperationsInput | number
   rentalRatePerDay?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey?: Prisma.StringFieldUpdateOperationsInput | string
   derivativeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -894,6 +931,7 @@ export type CatalogItemUpdateWithoutRequiredByInput = {
   manufacturer?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   year?: Prisma.IntFieldUpdateOperationsInput | number
+  unitCount?: Prisma.IntFieldUpdateOperationsInput | number
   rentalRatePerDay?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey?: Prisma.StringFieldUpdateOperationsInput | string
   derivativeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -913,6 +951,7 @@ export type CatalogItemUncheckedUpdateWithoutRequiredByInput = {
   manufacturer?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   year?: Prisma.IntFieldUpdateOperationsInput | number
+  unitCount?: Prisma.IntFieldUpdateOperationsInput | number
   rentalRatePerDay?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey?: Prisma.StringFieldUpdateOperationsInput | string
   derivativeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -930,6 +969,7 @@ export type CatalogItemCreateManyCompanyInput = {
   manufacturer: string
   model: string
   year: number
+  unitCount?: number
   rentalRatePerDay: runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey: string
   derivativeKey?: string | null
@@ -946,6 +986,7 @@ export type CatalogItemUpdateWithoutCompanyInput = {
   manufacturer?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   year?: Prisma.IntFieldUpdateOperationsInput | number
+  unitCount?: Prisma.IntFieldUpdateOperationsInput | number
   rentalRatePerDay?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey?: Prisma.StringFieldUpdateOperationsInput | string
   derivativeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -964,6 +1005,7 @@ export type CatalogItemUncheckedUpdateWithoutCompanyInput = {
   manufacturer?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   year?: Prisma.IntFieldUpdateOperationsInput | number
+  unitCount?: Prisma.IntFieldUpdateOperationsInput | number
   rentalRatePerDay?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey?: Prisma.StringFieldUpdateOperationsInput | string
   derivativeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -982,6 +1024,7 @@ export type CatalogItemUncheckedUpdateManyWithoutCompanyInput = {
   manufacturer?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   year?: Prisma.IntFieldUpdateOperationsInput | number
+  unitCount?: Prisma.IntFieldUpdateOperationsInput | number
   rentalRatePerDay?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   imageKey?: Prisma.StringFieldUpdateOperationsInput | string
   derivativeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1039,6 +1082,7 @@ export type CatalogItemSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   manufacturer?: boolean
   model?: boolean
   year?: boolean
+  unitCount?: boolean
   rentalRatePerDay?: boolean
   imageKey?: boolean
   derivativeKey?: boolean
@@ -1060,6 +1104,7 @@ export type CatalogItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   manufacturer?: boolean
   model?: boolean
   year?: boolean
+  unitCount?: boolean
   rentalRatePerDay?: boolean
   imageKey?: boolean
   derivativeKey?: boolean
@@ -1078,6 +1123,7 @@ export type CatalogItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   manufacturer?: boolean
   model?: boolean
   year?: boolean
+  unitCount?: boolean
   rentalRatePerDay?: boolean
   imageKey?: boolean
   derivativeKey?: boolean
@@ -1096,6 +1142,7 @@ export type CatalogItemSelectScalar = {
   manufacturer?: boolean
   model?: boolean
   year?: boolean
+  unitCount?: boolean
   rentalRatePerDay?: boolean
   imageKey?: boolean
   derivativeKey?: boolean
@@ -1105,7 +1152,7 @@ export type CatalogItemSelectScalar = {
   updatedAt?: boolean
 }
 
-export type CatalogItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "companyId" | "name" | "description" | "manufacturer" | "model" | "year" | "rentalRatePerDay" | "imageKey" | "derivativeKey" | "metadata" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["catalogItem"]>
+export type CatalogItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "companyId" | "name" | "description" | "manufacturer" | "model" | "year" | "unitCount" | "rentalRatePerDay" | "imageKey" | "derivativeKey" | "metadata" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["catalogItem"]>
 export type CatalogItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   requiring?: boolean | Prisma.CatalogItem$requiringArgs<ExtArgs>
@@ -1134,6 +1181,10 @@ export type $CatalogItemPayload<ExtArgs extends runtime.Types.Extensions.Interna
     manufacturer: string
     model: string
     year: number
+    /**
+     * How many of this catalog item the company owns. Availability comes later.
+     */
+    unitCount: number
     rentalRatePerDay: runtime.Decimal
     imageKey: string
     derivativeKey: string | null
@@ -1574,6 +1625,7 @@ export interface CatalogItemFieldRefs {
   readonly manufacturer: Prisma.FieldRef<"CatalogItem", 'String'>
   readonly model: Prisma.FieldRef<"CatalogItem", 'String'>
   readonly year: Prisma.FieldRef<"CatalogItem", 'Int'>
+  readonly unitCount: Prisma.FieldRef<"CatalogItem", 'Int'>
   readonly rentalRatePerDay: Prisma.FieldRef<"CatalogItem", 'Decimal'>
   readonly imageKey: Prisma.FieldRef<"CatalogItem", 'String'>
   readonly derivativeKey: Prisma.FieldRef<"CatalogItem", 'String'>

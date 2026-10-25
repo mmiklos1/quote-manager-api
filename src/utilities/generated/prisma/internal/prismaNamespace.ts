@@ -1642,6 +1642,7 @@ export const CatalogItemScalarFieldEnum = {
   manufacturer: 'manufacturer',
   model: 'model',
   year: 'year',
+  unitCount: 'unitCount',
   rentalRatePerDay: 'rentalRatePerDay',
   imageKey: 'imageKey',
   derivativeKey: 'derivativeKey',

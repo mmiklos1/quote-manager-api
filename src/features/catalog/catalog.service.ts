@@ -33,7 +33,17 @@ function requireText(value, field) {
 }
 
 function requireYear(value) {
-  if (!Number.isInteger(value)) {
+  if (!Number.isInteger(value) || value < 1000 || value > 9999) {
+    throw new ApiError(ErrorClass.catalogValidation);
+  }
+  return value;
+}
+
+function requireUnitCount(value) {
+  if (value === undefined || value === null) {
+    return 1;
+  }
+  if (!Number.isInteger(value) || value < 0) {
     throw new ApiError(ErrorClass.catalogValidation);
   }
   return value;
@@ -159,6 +169,7 @@ function presentItem(item, currency, requirements: any[] = []) {
     manufacturer: item.manufacturer,
     model: item.model,
     year: item.year,
+    unitCount: item.unitCount ?? 1,
     rentalRatePerDay: rateText(item.rentalRatePerDay),
     currency,
     imageKey: item.imageKey,
@@ -176,6 +187,7 @@ function itemData(body, image) {
     manufacturer: requireText(body.manufacturer, 'manufacturer'),
     model: requireText(body.model, 'model'),
     year: requireYear(body.year),
+    unitCount: requireUnitCount(body.unitCount),
     rentalRatePerDay: requireRate(body.rentalRatePerDay),
     metadata: requireMetadata(body.metadata),
     imageKey: image.imageKey,

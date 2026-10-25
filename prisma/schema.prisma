@@ -210,6 +210,8 @@ model CatalogItem {
   manufacturer      String
   model             String
   year              Int
+  /// How many of this catalog item the company owns. Availability comes later.
+  unitCount         Int       @default(1) @map("unit_count")
   rentalRatePerDay  Decimal   @map("rental_rate_per_day") @db.Decimal(12, 2)
   imageKey          String    @map("image_key")
   derivativeKey     String?   @map("derivative_key")
