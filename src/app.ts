@@ -2,7 +2,7 @@ import express, { type Express, type Request, type Response } from 'express';
 import type { AppConfig } from './config.js';
 import { createAnalytics } from './features/analytics/analytics.service.js';
 import { createLoginRouter } from './features/auth/routes.js';
-import { createCatalogRouter } from './features/catalog/routes.js';
+import { createCatalogRouter, createCompanyAbilitiesRouter } from './features/catalog/routes.js';
 import { createHealthRouter } from './features/health/routes.js';
 import { ApiError, ErrorClass } from './utilities/errors.js';
 import { createErrorHandler } from './utilities/http/error-handler.js';
@@ -42,6 +42,10 @@ export function createApp({
       signingKey: config.jwtSigningKey,
       attemptLimiter,
     }));
+    app.use(
+      '/api/v1/companies/:companyId/abilities',
+      createCompanyAbilitiesRouter({ prisma, config, logger }),
+    );
     app.use(
       '/api/v1/companies/:companyId/catalog-items',
       createCatalogRouter({ prisma, config, logger }),

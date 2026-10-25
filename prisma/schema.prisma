@@ -83,10 +83,41 @@ model Permission {
 
   company Company                 @relation(fields: [companyId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   grants  CompanyUserPermission[]
+  abilities PermissionAbility[]
 
   @@unique([companyId, name])
   @@index([companyId])
   @@map("permissions")
+}
+
+// Global actions a company role (permissions row) can hold.
+// key is action:resource, for example read:catalog.
+// write:<resource> also grants read:<resource> when access is checked.
+// The admin permission (is_admin) is linked to every ability by the migration triggers.
+
+model Ability {
+  id        String   @id @default(uuid()) @db.Uuid
+  key       String   @unique
+  action    String
+  resource  String
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  permissions PermissionAbility[]
+
+  @@unique([action, resource])
+  @@map("abilities")
+}
+
+model PermissionAbility {
+  id           String @id @default(uuid()) @db.Uuid
+  permissionId String @map("permission_id") @db.Uuid
+  abilityId    String @map("ability_id") @db.Uuid
+
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  ability    Ability    @relation(fields: [abilityId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([permissionId, abilityId])
+  @@map("permission_abilities")
 }
 
 model CompanyUserPermission {

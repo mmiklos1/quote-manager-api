@@ -126,6 +126,7 @@ export function createCatalogController({
           name: req.query.name,
           manufacturer: req.query.manufacturer,
           model: req.query.model,
+          deleted: req.query.deleted,
         });
         res.json({ items });
       });
@@ -176,6 +177,12 @@ export function createCatalogController({
           req.body ?? {},
         );
         res.json(edge);
+      });
+    },
+    abilities(req, res, next) {
+      return run(req, res, next, async (user) => {
+        const abilities = await service.abilities(req.params.companyId, user);
+        res.json({ abilities });
       });
     },
     removeRequirement(req, res, next) {

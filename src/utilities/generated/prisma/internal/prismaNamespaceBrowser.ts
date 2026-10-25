@@ -55,6 +55,8 @@ export const ModelName = {
   User: 'User',
   CompanyUser: 'CompanyUser',
   Permission: 'Permission',
+  Ability: 'Ability',
+  PermissionAbility: 'PermissionAbility',
   CompanyUserPermission: 'CompanyUserPermission',
   UserPassword: 'UserPassword',
   PasswordHistory: 'PasswordHistory',
@@ -125,6 +127,26 @@ export const PermissionScalarFieldEnum = {
 } as const
 
 export type PermissionScalarFieldEnum = (typeof PermissionScalarFieldEnum)[keyof typeof PermissionScalarFieldEnum]
+
+
+export const AbilityScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  action: 'action',
+  resource: 'resource',
+  createdAt: 'createdAt'
+} as const
+
+export type AbilityScalarFieldEnum = (typeof AbilityScalarFieldEnum)[keyof typeof AbilityScalarFieldEnum]
+
+
+export const PermissionAbilityScalarFieldEnum = {
+  id: 'id',
+  permissionId: 'permissionId',
+  abilityId: 'abilityId'
+} as const
+
+export type PermissionAbilityScalarFieldEnum = (typeof PermissionAbilityScalarFieldEnum)[keyof typeof PermissionAbilityScalarFieldEnum]
 
 
 export const CompanyUserPermissionScalarFieldEnum = {

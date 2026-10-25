@@ -8,7 +8,9 @@ import { currencyForCountry } from '../src/features/catalog/currency.js';
 import { normalizeEmail } from '../src/utilities/identity/email.js';
 
 // Local only. Asks for a company, inserts it, and attaches one existing user.
-// The user must already exist. This script does not create a password or a permission.
+// The user must already exist. This script does not create a password.
+// Inserting the company row also inserts that company's admin permission
+// and grants it to the attached user.
 //
 // Usage, from this repo, after migrations:
 //   node scripts/insert-local-company.js
@@ -128,6 +130,13 @@ export async function main() {
        VALUES ($1, $2, 'active')
        RETURNING id`,
       [companyId, userId],
+    );
+    await client.query(
+      `INSERT INTO company_user_permissions (company_user_id, permission_id)
+       SELECT $1, id
+       FROM permissions
+       WHERE company_id = $2 AND is_admin = true`,
+      [membership.rows[0].id, companyId],
     );
     await client.query('COMMIT');
     console.log(`Created company ${name} (${companyId})`);

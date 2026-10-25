@@ -33,3 +33,10 @@ export function createCatalogRouter(deps: Parameters<typeof createCatalogControl
 
   return router;
 }
+
+export function createCompanyAbilitiesRouter(deps: Parameters<typeof createCatalogController>[0]): Router {
+  const controller = createCatalogController(deps);
+  const router = express.Router({ mergeParams: true });
+  router.get('/', (req, res, next) => controller.abilities(req, res, next));
+  return router;
+}

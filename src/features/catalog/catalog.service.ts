@@ -1,5 +1,5 @@
 import { ApiError, ErrorClass } from '../../utilities/errors.js';
-import { canMutateCatalog } from './access.js';
+import { canReadCatalog, canWriteCatalog, effectiveAbilityKeys } from './access.js';
 import { currencyForCountry } from './currency.js';
 import { requirementWouldCycle } from './cycle.js';
 import { LOCAL_IMAGE_KEY, storeCatalogImage } from './images.js';
@@ -80,7 +80,22 @@ async function loadCompany(prisma, companyId) {
   return company;
 }
 
-async function activeGrants(prisma, companyId, userId) {
+function keysFromGrants(rows) {
+  const keys: string[] = [];
+  for (const row of rows) {
+    const links = row.permission?.abilities ?? [];
+    for (const link of links) {
+      const key = link.ability?.key;
+      if (typeof key === 'string') {
+        keys.push(key);
+      }
+    }
+  }
+  return keys;
+}
+
+/** Null when this user has no active membership at the company. */
+async function membershipAbilityKeys(prisma, companyId, userId) {
   const membership = await prisma.companyUser.findUnique({
     where: { companyId_userId: { companyId, userId } },
   });
@@ -89,12 +104,13 @@ async function activeGrants(prisma, companyId, userId) {
   }
   const rows = await prisma.companyUserPermission.findMany({
     where: { companyUserId: membership.id },
-    include: { permission: true },
+    include: {
+      permission: {
+        include: { abilities: { include: { ability: true } } },
+      },
+    },
   });
-  return rows.map((row) => ({
-    name: row.permission.name,
-    isAdmin: row.permission.isAdmin,
-  }));
+  return keysFromGrants(rows);
 }
 
 async function assertReader(prisma, companyId, user) {
@@ -102,8 +118,8 @@ async function assertReader(prisma, companyId, user) {
   if (user.isSuperAdmin) {
     return company;
   }
-  const grants = await activeGrants(prisma, companyId, user.id);
-  if (!grants) {
+  const abilityKeys = await membershipAbilityKeys(prisma, companyId, user.id);
+  if (!abilityKeys || !canReadCatalog({ isSuperAdmin: false, abilityKeys })) {
     throw new ApiError(ErrorClass.catalogForbidden);
   }
   return company;
@@ -114,8 +130,8 @@ async function assertEditor(prisma, companyId, user) {
   if (user.isSuperAdmin) {
     return company;
   }
-  const grants = await activeGrants(prisma, companyId, user.id);
-  if (!grants || !canMutateCatalog({ isSuperAdmin: false, grants })) {
+  const abilityKeys = await membershipAbilityKeys(prisma, companyId, user.id);
+  if (!abilityKeys || !canWriteCatalog({ isSuperAdmin: false, abilityKeys })) {
     throw new ApiError(ErrorClass.catalogForbidden);
   }
   return company;
@@ -222,10 +238,34 @@ export function createCatalogService({ prisma, assetStorage, storage, crop, anal
   }
 
   return {
-    async list(companyId, user, filters: { name?: string; manufacturer?: string; model?: string } = {}) {
-      const company = await assertReader(prisma, companyId, user);
+    async abilities(companyId, user) {
+      await loadCompany(prisma, companyId);
+      if (user.isSuperAdmin) {
+        const rows = await prisma.ability.findMany();
+        return [...effectiveAbilityKeys(rows.map((row) => row.key))].sort();
+      }
+      const abilityKeys = await membershipAbilityKeys(prisma, companyId, user.id);
+      if (!abilityKeys) {
+        throw new ApiError(ErrorClass.catalogForbidden);
+      }
+      return [...effectiveAbilityKeys(abilityKeys)].sort();
+    },
+
+    async list(companyId, user, filters: {
+      name?: string;
+      manufacturer?: string;
+      model?: string;
+      deleted?: string | boolean;
+    } = {}) {
+      const deletedOnly = filters.deleted === true || filters.deleted === 'true';
+      const company = deletedOnly
+        ? await assertEditor(prisma, companyId, user)
+        : await assertReader(prisma, companyId, user);
       const currency = assertCurrency(company);
-      const where: Record<string, unknown> = { companyId, deletedAt: null };
+      const where: Record<string, unknown> = {
+        companyId,
+        deletedAt: deletedOnly ? { not: null } : null,
+      };
       if (typeof filters.name === 'string' && filters.name.length > 0) {
         where.name = { contains: filters.name, mode: 'insensitive' };
       }

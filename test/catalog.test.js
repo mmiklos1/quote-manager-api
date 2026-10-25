@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { canMutateCatalog } from '../src/features/catalog/access.js';
+import { canReadCatalog, canWriteCatalog, READ_CATALOG, WRITE_CATALOG } from '../src/features/catalog/access.js';
 import { requirementWouldCycle } from '../src/features/catalog/cycle.js';
 import { currencyForCountry } from '../src/features/catalog/currency.js';
 import { decodeImage, LOCAL_IMAGE_KEY, MAX_IMAGE_BYTES, storeCatalogImage } from '../src/features/catalog/images.js';
@@ -25,20 +25,15 @@ test('a requirement edge rejects a cycle', () => {
   assert.equal(requirementWouldCycle(edges, 'a', 'c'), false);
 });
 
-test('catalog edits require product manager, admin, or super admin', () => {
-  assert.equal(canMutateCatalog({ isSuperAdmin: true, grants: [] }), true);
-  assert.equal(canMutateCatalog({
-    isSuperAdmin: false,
-    grants: [{ name: 'product_manager', isAdmin: false }],
-  }), true);
-  assert.equal(canMutateCatalog({
-    isSuperAdmin: false,
-    grants: [{ name: 'admin', isAdmin: true }],
-  }), true);
-  assert.equal(canMutateCatalog({
-    isSuperAdmin: false,
-    grants: [{ name: 'sales', isAdmin: false }],
-  }), false);
+test('write:catalog can change the catalog and includes read:catalog', () => {
+  assert.equal(canWriteCatalog({ isSuperAdmin: true, abilityKeys: [] }), true);
+  assert.equal(canReadCatalog({ isSuperAdmin: true, abilityKeys: [] }), true);
+  assert.equal(canWriteCatalog({ isSuperAdmin: false, abilityKeys: [WRITE_CATALOG] }), true);
+  assert.equal(canReadCatalog({ isSuperAdmin: false, abilityKeys: [WRITE_CATALOG] }), true);
+  assert.equal(canWriteCatalog({ isSuperAdmin: false, abilityKeys: [READ_CATALOG] }), false);
+  assert.equal(canReadCatalog({ isSuperAdmin: false, abilityKeys: [READ_CATALOG] }), true);
+  assert.equal(canReadCatalog({ isSuperAdmin: false, abilityKeys: [] }), false);
+  assert.equal(canReadCatalog({ isSuperAdmin: false, abilityKeys: ['write:other'] }), false);
 });
 
 test('local image storage does not keep bytes', async () => {
@@ -83,6 +78,7 @@ function memoryPrisma(seed) {
     users: new Map([[seed.user.id, seed.user]]),
     memberships: [...seed.memberships],
     grants: [...seed.grants],
+    abilities: seed.abilities ?? [],
     items: [],
     edges: [],
   };
@@ -92,6 +88,7 @@ function memoryPrisma(seed) {
       if (where.id && item.id !== where.id) return false;
       if (where.companyId && item.companyId !== where.companyId) return false;
       if (where.deletedAt === null && item.deletedAt) return false;
+      if (where.deletedAt && typeof where.deletedAt === 'object' && !item.deletedAt) return false;
       return true;
     });
   }
@@ -106,6 +103,11 @@ function memoryPrisma(seed) {
       async findUnique({ where }) {
         const key = where.companyId_userId;
         return state.memberships.find((row) => row.companyId === key.companyId && row.userId === key.userId) ?? null;
+      },
+    },
+    ability: {
+      async findMany() {
+        return state.abilities;
       },
     },
     companyUserPermission: {
@@ -205,19 +207,25 @@ const company = { id: 'co-1', countryOfOrigin: 'US' };
 const manager = { id: 'user-1', isSuperAdmin: false };
 const outsider = { id: 'user-2', isSuperAdmin: false };
 
+function grant(companyUserId, abilityKeys) {
+  return {
+    companyUserId,
+    permission: {
+      abilities: abilityKeys.map((key) => ({ ability: { key } })),
+    },
+  };
+}
+
 function managerSeed() {
   return {
     companies: [company],
     user: manager,
     memberships: [{ id: 'mem-1', companyId: 'co-1', userId: 'user-1', status: 'active' }],
-    grants: [{
-      companyUserId: 'mem-1',
-      permission: { name: 'product_manager', isAdmin: false },
-    }],
+    grants: [grant('mem-1', [WRITE_CATALOG])],
   };
 }
 
-test('a product manager can create an item and a duplicate is rejected', async () => {
+test('write:catalog can create an item and a duplicate is rejected', async () => {
   const { service, state, analytics } = serviceFor(managerSeed());
   const created = await service.create('co-1', manager, {
     name: 'Cable',
@@ -234,6 +242,8 @@ test('a product manager can create an item and a duplicate is rejected', async (
   assert.equal(created.metadata.color, 'black');
   assert.equal(state.items[0].type, undefined);
   assert.equal(analytics.includes('catalog_item_created'), true);
+  assert.equal((await service.list('co-1', manager, {})).length, 1);
+  assert.deepEqual(await service.abilities('co-1', manager), [READ_CATALOG, WRITE_CATALOG]);
 
   await assert.rejects(
     () => service.create('co-1', manager, {
@@ -248,13 +258,38 @@ test('a product manager can create an item and a duplicate is rejected', async (
   );
 });
 
-test('a member without catalog permission cannot create', async () => {
+test('read:catalog can list and cannot create', async () => {
   const { service } = serviceFor({
     companies: [company],
     user: outsider,
     memberships: [{ id: 'mem-2', companyId: 'co-1', userId: 'user-2', status: 'active' }],
-    grants: [{ companyUserId: 'mem-2', permission: { name: 'sales', isAdmin: false } }],
+    grants: [grant('mem-2', [READ_CATALOG])],
   });
+  assert.deepEqual(await service.list('co-1', outsider, {}), []);
+  await assert.rejects(
+    () => service.create('co-1', outsider, {
+      name: 'Cable',
+      description: 'One meter',
+      manufacturer: 'Acme',
+      model: 'C1',
+      year: 2024,
+      rentalRatePerDay: '10',
+    }),
+    (error) => error instanceof ApiError && error.errorClass === ErrorClass.catalogForbidden,
+  );
+});
+
+test('a member without catalog abilities cannot list or create', async () => {
+  const { service } = serviceFor({
+    companies: [company],
+    user: outsider,
+    memberships: [{ id: 'mem-2', companyId: 'co-1', userId: 'user-2', status: 'active' }],
+    grants: [grant('mem-2', [])],
+  });
+  await assert.rejects(
+    () => service.list('co-1', outsider, {}),
+    (error) => error instanceof ApiError && error.errorClass === ErrorClass.catalogForbidden,
+  );
   await assert.rejects(
     () => service.create('co-1', outsider, {
       name: 'Cable',
@@ -296,7 +331,7 @@ test('requires rejects a cycle and a missing country', async () => {
     companies: [{ id: 'co-2', countryOfOrigin: null }],
     user: manager,
     memberships: [{ id: 'mem-9', companyId: 'co-2', userId: 'user-1', status: 'active' }],
-    grants: [{ companyUserId: 'mem-9', permission: { name: 'product_manager', isAdmin: false } }],
+    grants: [grant('mem-9', [WRITE_CATALOG])],
   });
   await assert.rejects(
     () => bare.service.create('co-2', manager, {

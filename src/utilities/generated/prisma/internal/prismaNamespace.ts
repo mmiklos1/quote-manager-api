@@ -401,6 +401,8 @@ export const ModelName = {
   User: 'User',
   CompanyUser: 'CompanyUser',
   Permission: 'Permission',
+  Ability: 'Ability',
+  PermissionAbility: 'PermissionAbility',
   CompanyUserPermission: 'CompanyUserPermission',
   UserPassword: 'UserPassword',
   PasswordHistory: 'PasswordHistory',
@@ -424,7 +426,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "company" | "user" | "companyUser" | "permission" | "companyUserPermission" | "userPassword" | "passwordHistory" | "linkedLogin" | "session" | "passwordReset" | "catalogItem" | "catalogRequirement"
+    modelProps: "company" | "user" | "companyUser" | "permission" | "ability" | "permissionAbility" | "companyUserPermission" | "userPassword" | "passwordHistory" | "linkedLogin" | "session" | "passwordReset" | "catalogItem" | "catalogRequirement"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -721,6 +723,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.PermissionCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.PermissionCountAggregateOutputType> | number
+        }
+      }
+    }
+    Ability: {
+      payload: Prisma.$AbilityPayload<ExtArgs>
+      fields: Prisma.AbilityFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AbilityFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AbilityPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AbilityFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AbilityPayload>
+        }
+        findFirst: {
+          args: Prisma.AbilityFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AbilityPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AbilityFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AbilityPayload>
+        }
+        findMany: {
+          args: Prisma.AbilityFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AbilityPayload>[]
+        }
+        create: {
+          args: Prisma.AbilityCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AbilityPayload>
+        }
+        createMany: {
+          args: Prisma.AbilityCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AbilityCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AbilityPayload>[]
+        }
+        delete: {
+          args: Prisma.AbilityDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AbilityPayload>
+        }
+        update: {
+          args: Prisma.AbilityUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AbilityPayload>
+        }
+        deleteMany: {
+          args: Prisma.AbilityDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AbilityUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AbilityUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AbilityPayload>[]
+        }
+        upsert: {
+          args: Prisma.AbilityUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AbilityPayload>
+        }
+        aggregate: {
+          args: Prisma.AbilityAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAbility>
+        }
+        groupBy: {
+          args: Prisma.AbilityGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AbilityGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AbilityCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AbilityCountAggregateOutputType> | number
+        }
+      }
+    }
+    PermissionAbility: {
+      payload: Prisma.$PermissionAbilityPayload<ExtArgs>
+      fields: Prisma.PermissionAbilityFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PermissionAbilityFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAbilityPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PermissionAbilityFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAbilityPayload>
+        }
+        findFirst: {
+          args: Prisma.PermissionAbilityFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAbilityPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PermissionAbilityFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAbilityPayload>
+        }
+        findMany: {
+          args: Prisma.PermissionAbilityFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAbilityPayload>[]
+        }
+        create: {
+          args: Prisma.PermissionAbilityCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAbilityPayload>
+        }
+        createMany: {
+          args: Prisma.PermissionAbilityCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PermissionAbilityCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAbilityPayload>[]
+        }
+        delete: {
+          args: Prisma.PermissionAbilityDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAbilityPayload>
+        }
+        update: {
+          args: Prisma.PermissionAbilityUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAbilityPayload>
+        }
+        deleteMany: {
+          args: Prisma.PermissionAbilityDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PermissionAbilityUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PermissionAbilityUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAbilityPayload>[]
+        }
+        upsert: {
+          args: Prisma.PermissionAbilityUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PermissionAbilityPayload>
+        }
+        aggregate: {
+          args: Prisma.PermissionAbilityAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePermissionAbility>
+        }
+        groupBy: {
+          args: Prisma.PermissionAbilityGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PermissionAbilityGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PermissionAbilityCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PermissionAbilityCountAggregateOutputType> | number
         }
       }
     }
@@ -1401,6 +1551,26 @@ export const PermissionScalarFieldEnum = {
 export type PermissionScalarFieldEnum = (typeof PermissionScalarFieldEnum)[keyof typeof PermissionScalarFieldEnum]
 
 
+export const AbilityScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  action: 'action',
+  resource: 'resource',
+  createdAt: 'createdAt'
+} as const
+
+export type AbilityScalarFieldEnum = (typeof AbilityScalarFieldEnum)[keyof typeof AbilityScalarFieldEnum]
+
+
+export const PermissionAbilityScalarFieldEnum = {
+  id: 'id',
+  permissionId: 'permissionId',
+  abilityId: 'abilityId'
+} as const
+
+export type PermissionAbilityScalarFieldEnum = (typeof PermissionAbilityScalarFieldEnum)[keyof typeof PermissionAbilityScalarFieldEnum]
+
+
 export const CompanyUserPermissionScalarFieldEnum = {
   id: 'id',
   companyUserId: 'companyUserId',
@@ -1788,6 +1958,8 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   companyUser?: Prisma.CompanyUserOmit
   permission?: Prisma.PermissionOmit
+  ability?: Prisma.AbilityOmit
+  permissionAbility?: Prisma.PermissionAbilityOmit
   companyUserPermission?: Prisma.CompanyUserPermissionOmit
   userPassword?: Prisma.UserPasswordOmit
   passwordHistory?: Prisma.PasswordHistoryOmit

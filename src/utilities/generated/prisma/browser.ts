@@ -38,6 +38,16 @@ export type CompanyUser = Prisma.CompanyUserModel
  */
 export type Permission = Prisma.PermissionModel
 /**
+ * Model Ability
+ * 
+ */
+export type Ability = Prisma.AbilityModel
+/**
+ * Model PermissionAbility
+ * 
+ */
+export type PermissionAbility = Prisma.PermissionAbilityModel
+/**
  * Model CompanyUserPermission
  * 
  */
