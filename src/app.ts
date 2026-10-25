@@ -32,7 +32,9 @@ export function createApp({
   app.disable('x-powered-by');
   app.use(createRequestLogger(logger));
   app.use(express.json({ limit: '16mb' }));
-  app.use(createHealthRouter({ databaseReady: Boolean(prisma) }));
+  const health = createHealthRouter({ databaseReady: Boolean(prisma) });
+  app.use(health);
+  app.use('/api/v1', health);
   if (prisma && config) {
     app.use('/api/v1/login', createLoginRouter({
       prisma,

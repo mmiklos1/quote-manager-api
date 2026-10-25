@@ -10,6 +10,17 @@ const logger = createLogger(undefined, { level: config.logLevel });
 const database = config.databaseUrl ? createPrismaClient(config.databaseUrl) : null;
 const app = createApp({ prisma: database?.prisma, config, logger });
 
-app.listen(port, () => {
+const server = app.listen(port);
+
+server.on('listening', () => {
   logger.info({ message: 'api_listening', port });
+});
+
+server.on('error', (error: NodeJS.ErrnoException) => {
+  if (error.code === 'EADDRINUSE') {
+    logger.error({ message: 'port_in_use', port });
+  } else {
+    logger.error({ message: 'listen_failed', err: error.message });
+  }
+  process.exitCode = 1;
 });

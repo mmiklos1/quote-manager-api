@@ -59,18 +59,20 @@ test('health returns ok and heartbeat includes version metadata', async () => {
   });
   const address = server.address();
   try {
-    const health = await fetch(`http://127.0.0.1:${address.port}/health`);
-    assert.equal(health.status, 200);
-    assert.equal(await health.text(), 'ok');
+    for (const prefix of ['', '/api/v1']) {
+      const health = await fetch(`http://127.0.0.1:${address.port}${prefix}/health`);
+      assert.equal(health.status, 200);
+      assert.equal(await health.text(), 'ok');
 
-    const heartbeat = await fetch(`http://127.0.0.1:${address.port}/heartbeat`);
-    assert.equal(heartbeat.status, 200);
-    const body = await heartbeat.json();
-    assert.equal(body.status, 'ok');
-    assert.equal(body.version, 'v0.0.1');
-    assert.equal(typeof body.uptimeSeconds, 'number');
-    assert.equal(body.health.service, 'ok');
-    assert.equal(body.health.database, 'unavailable');
+      const heartbeat = await fetch(`http://127.0.0.1:${address.port}${prefix}/heartbeat`);
+      assert.equal(heartbeat.status, 200);
+      const body = await heartbeat.json();
+      assert.equal(body.status, 'ok');
+      assert.equal(body.version, 'v0.0.1');
+      assert.equal(typeof body.uptimeSeconds, 'number');
+      assert.equal(body.health.service, 'ok');
+      assert.equal(body.health.database, 'unavailable');
+    }
   } finally {
     await new Promise((resolve) => {
       server.close(resolve);
