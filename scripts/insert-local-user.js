@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import pg from 'pg';
-import { normalizeEmail } from '../src/identity/email.js';
-import { hashPassword } from '../src/passwords/hash.js';
+import { normalizeEmail } from '../src/utilities/identity/email.js';
+import { hashPassword } from '../src/utilities/passwords/hash.js';
 
 // Local only. Hashes with the same Argon2id settings as login.
 // Argon2id generates a salt and stores it in the hash string.

@@ -7,12 +7,21 @@ Product behavior that is still unnamed is listed in `TODO-questions.md`. Feature
 ## Stack
 
 - Node.js 26.10.0 (Current). `package.json` requires `>=26.10.0`.
+- TypeScript 7 (source under `src/`, run with `tsx` or `pnpm run build` then `pnpm run start:dist`)
 - Express 5.2.1
 - `pg` 8.23.0, used by Prisma's Postgres adapter
 - Prisma ORM 7.10.0 (latest stable; the 8.0 npm tag was a release candidate and is not used)
 - Local Postgres 18.4 in Docker
 
-The generated Prisma client is TypeScript and uses runtime namespaces. Node's built-in type stripper cannot run those files. `npm test` loads them with `tsx`. `npm start` does not open the database.
+## Layout
+
+- `src/features/` — product features with `routes.ts`, `{feature}.controller.ts`, and `{feature}.service.ts` (`auth`, `catalog`, `analytics`, `health`)
+- `src/utilities/` — shared helpers (`logging`, `passwords`, `sessions`, `identity`, `db`, `reset`, `invite`, generated Prisma client)
+- `scripts/` — local seed helpers only
+
+`GET /health` returns plain `ok`. `GET /heartbeat` returns uptime, version (`v0.0.1`), and service/database health.
+
+The generated Prisma client uses runtime namespaces. `pnpm test` and `pnpm start` load TypeScript with `tsx`.
 
 ## Local setup
 

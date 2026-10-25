@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { APP_NAME, inviteBody, inviteFromAddress } from '../src/invite/template.js';
+import { APP_NAME, inviteBody, inviteFromAddress } from '../src/utilities/invite/template.js';
 
 test('invite body is the spec sentence', () => {
   assert.equal(APP_NAME, 'Quote Manager');

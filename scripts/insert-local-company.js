@@ -4,8 +4,8 @@ import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import { pathToFileURL } from 'node:url';
 import pg from 'pg';
-import { currencyForCountry } from '../src/catalog/currency.js';
-import { normalizeEmail } from '../src/identity/email.js';
+import { currencyForCountry } from '../src/features/catalog/currency.js';
+import { normalizeEmail } from '../src/utilities/identity/email.js';
 
 // Local only. Asks for a company, inserts it, and attaches one existing user.
 // The user must already exist. This script does not create a password or a permission.

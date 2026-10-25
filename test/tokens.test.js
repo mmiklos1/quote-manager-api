@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
 import jwt from 'jsonwebtoken';
-import { createPkcePair, pkceChallengeFor, statesMatch } from '../src/auth/pkce.js';
-import { ACCESS_TOKEN_LIFETIME_SECONDS, accessTokenWindow } from '../src/sessions/lifetime.js';
-import { hashToken } from '../src/sessions/token-hash.js';
+import { createPkcePair, pkceChallengeFor, statesMatch } from '../src/features/auth/pkce.js';
+import { ACCESS_TOKEN_LIFETIME_SECONDS, accessTokenWindow } from '../src/utilities/sessions/lifetime.js';
+import { hashToken } from '../src/utilities/sessions/token-hash.js';
 
 test('PKCE challenge is S256 and state is compared in full', () => {
   const pair = createPkcePair();

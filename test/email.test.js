@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { ApiError, ErrorClass } from '../src/errors.js';
-import { normalizeEmail } from '../src/identity/email.js';
+import { ApiError, ErrorClass } from '../src/utilities/errors.js';
+import { normalizeEmail } from '../src/utilities/identity/email.js';
 
 test('normalizeEmail trims and lowercases the whole address', () => {
   assert.equal(normalizeEmail('  Ada@Example.COM '), 'ada@example.com');

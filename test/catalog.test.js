@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { canMutateCatalog } from '../src/catalog/access.js';
-import { requirementWouldCycle } from '../src/catalog/cycle.js';
-import { currencyForCountry } from '../src/catalog/currency.js';
-import { decodeImage, LOCAL_IMAGE_KEY, MAX_IMAGE_BYTES, storeCatalogImage } from '../src/catalog/images.js';
-import { createCatalogService } from '../src/catalog/items.js';
-import { accessTokenFromCookie, accessTokenFromRequest } from '../src/catalog/routes.js';
-import { ApiError, ErrorClass } from '../src/errors.js';
+import { canMutateCatalog } from '../src/features/catalog/access.js';
+import { requirementWouldCycle } from '../src/features/catalog/cycle.js';
+import { currencyForCountry } from '../src/features/catalog/currency.js';
+import { decodeImage, LOCAL_IMAGE_KEY, MAX_IMAGE_BYTES, storeCatalogImage } from '../src/features/catalog/images.js';
+import { createCatalogService } from '../src/features/catalog/catalog.service.js';
+import { accessTokenFromCookie, accessTokenFromRequest } from '../src/features/catalog/routes.js';
+import { ApiError, ErrorClass } from '../src/utilities/errors.js';
 
 test('currency uses the company country code', () => {
   assert.equal(currencyForCountry('us'), 'USD');

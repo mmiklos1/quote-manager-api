@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { DUMMY_PASSWORD_HASH, PASSWORD_HASH_PARAMETERS, hashPassword, verifyPassword } from '../src/passwords/hash.js';
-import { passwordRejectionClass } from '../src/passwords/policy.js';
+import { DUMMY_PASSWORD_HASH, PASSWORD_HASH_PARAMETERS, hashPassword, verifyPassword } from '../src/utilities/passwords/hash.js';
+import { passwordRejectionClass } from '../src/utilities/passwords/policy.js';
 
 test('password rules require 8 characters, a number, and a non-letter non-number', () => {
   assert.equal(passwordRejectionClass('abcdef1!'), null);

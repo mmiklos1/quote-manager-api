@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createAnalytics } from '../src/analytics/events.js';
+import { createAnalytics } from '../src/features/analytics/analytics.service.js';
 import { assertPort, readConfig } from '../src/config.js';
-import { ApiError } from '../src/errors.js';
-import { createLogger } from '../src/logging/logger.js';
+import { ApiError } from '../src/utilities/errors.js';
+import { createLogger } from '../src/utilities/logging/logger.js';
 
 test('rejection shape is code rejected plus a class', () => {
   const error = new ApiError('bad_password');
@@ -16,9 +16,27 @@ test('PORT is required and 8080 is not assumed', () => {
   assert.equal(assertPort({ port: '3000' }), 3000);
 });
 
-test('logger redacts passwords, hashes, tokens, and links', () => {
+test('LOG_LEVEL defaults to warn and keeps a named level', () => {
+  assert.equal(readConfig({}).logLevel, 'warn');
+  assert.equal(readConfig({ LOG_LEVEL: 'DEBUG' }).logLevel, 'debug');
+  assert.equal(readConfig({ LOG_LEVEL: 'verbose' }).logLevel, 'warn');
+});
+
+test('the default log level drops info and debug', () => {
   const lines = [];
   const logger = createLogger((line) => lines.push(line));
+  logger.debug({ message: 'hidden-debug' });
+  logger.info({ message: 'hidden-info' });
+  logger.warn({ message: 'shown' });
+  assert.equal(lines.length, 1);
+  const record = JSON.parse(lines[0]);
+  assert.equal(record.level, 'warn');
+  assert.equal(record.message, 'shown');
+});
+
+test('logger redacts passwords, hashes, tokens, and links', () => {
+  const lines = [];
+  const logger = createLogger((line) => lines.push(line), { level: 'info' });
   logger.info({
     message: 'api_listening',
     port: 9,
@@ -39,7 +57,7 @@ test('logger redacts passwords, hashes, tokens, and links', () => {
 
 test('analytics keeps the four events and drops a password property', () => {
   const lines = [];
-  const analytics = createAnalytics(createLogger((line) => lines.push(line)));
+  const analytics = createAnalytics(createLogger((line) => lines.push(line), { level: 'info' }));
   analytics.loginFailed({
     method: 'password',
     userId: 'user-1',

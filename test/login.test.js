@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import test from 'node:test';
-import { createAttemptLimiter } from '../src/auth/attempts.js';
+import { createAttemptLimiter } from '../src/features/auth/attempts.js';
 import { createApp } from '../src/app.js';
-import { createLogger } from '../src/logging/logger.js';
-import { hashPassword } from '../src/passwords/hash.js';
-import { validateAccessToken } from '../src/sessions/sessions.js';
-import { hashToken } from '../src/sessions/token-hash.js';
+import { createLogger } from '../src/utilities/logging/logger.js';
+import { hashPassword } from '../src/utilities/passwords/hash.js';
+import { validateAccessToken } from '../src/utilities/sessions/sessions.js';
+import { hashToken } from '../src/utilities/sessions/token-hash.js';
 
 const SIGNING_KEY = 'test-signing-key-at-least-32-characters';
 const PASSWORD = 'abcdef1!';
@@ -16,7 +16,7 @@ function recordingLogger() {
   const events = [];
   const logger = createLogger((line) => {
     events.push(JSON.parse(line));
-  });
+  }, { level: 'info' });
   return { logger, events };
 }
 

@@ -2,18 +2,18 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import jwt from 'jsonwebtoken';
 import { describe, test } from 'node:test';
-import { createAnalytics } from '../../src/analytics/events.js';
-import { verifyPasswordLogin } from '../../src/auth/password.js';
-import { completeProviderAuthentication } from '../../src/auth/provider.js';
-import { ResetNotConfiguredError } from '../../src/errors.js';
-import { deprovisionMembership, provisionMembership } from '../../src/identity/membership.js';
-import { grantCompanyUserPermission } from '../../src/identity/permissions.js';
-import { createLogger } from '../../src/logging/logger.js';
-import { hashPassword } from '../../src/passwords/hash.js';
-import { confirmPasswordReset, requestPasswordReset, RESET_ACCEPTED } from '../../src/reset/reset.js';
-import { accessTokenWindow } from '../../src/sessions/lifetime.js';
-import { issueSession, validateAccessToken } from '../../src/sessions/sessions.js';
-import { hashToken } from '../../src/sessions/token-hash.js';
+import { createAnalytics } from '../../src/features/analytics/analytics.service.js';
+import { verifyPasswordLogin } from '../../src/features/auth/auth.service.js';
+import { completeProviderAuthentication } from '../../src/features/auth/provider.js';
+import { ResetNotConfiguredError } from '../../src/utilities/errors.js';
+import { deprovisionMembership, provisionMembership } from '../../src/utilities/identity/membership.js';
+import { grantCompanyUserPermission } from '../../src/utilities/identity/permissions.js';
+import { createLogger } from '../../src/utilities/logging/logger.js';
+import { hashPassword } from '../../src/utilities/passwords/hash.js';
+import { confirmPasswordReset, requestPasswordReset, RESET_ACCEPTED } from '../../src/utilities/reset/reset.js';
+import { accessTokenWindow } from '../../src/utilities/sessions/lifetime.js';
+import { issueSession, validateAccessToken } from '../../src/utilities/sessions/sessions.js';
+import { hashToken } from '../../src/utilities/sessions/token-hash.js';
 
 const SIGNING_KEY = 'test-signing-key-at-least-32-characters';
 
@@ -25,7 +25,7 @@ function recorder() {
   const events = [];
   const analytics = createAnalytics(createLogger((line) => {
     events.push(JSON.parse(line));
-  }));
+  }, { level: 'info' }));
   return { events, analytics };
 }
 
@@ -135,12 +135,12 @@ describe('F-003 acceptance', { concurrency: 1 }, () => {
     const { analytics } = recorder();
     const address = email('stranger');
     await assert.rejects(
-      () => verifyPasswordLogin(client, analytics, { email: address, password: 'abcdef1!' }),
+      () => verifyPasswordLogin(client, { email: address, password: 'abcdef1!' }),
       (error) => error.errorClass === 'unknown_email',
     );
     for (const provider of ['google', 'microsoft']) {
       await assert.rejects(
-        () => completeProviderAuthentication(client, analytics, {
+        () => completeProviderAuthentication(client, {
           provider,
           providerSubject: `sub-${provider}-${address}`,
           email: address,
@@ -161,7 +161,7 @@ describe('F-003 acceptance', { concurrency: 1 }, () => {
     const membership = await provisionMembership(client, { companyId: office.id, email: address });
     await seedCurrentPassword(membership.user.id, 'abcdef1!');
 
-    const verified = await verifyPasswordLogin(client, analytics, { email: address, password: 'abcdef1!' });
+    const verified = await verifyPasswordLogin(client, { email: address, password: 'abcdef1!' });
     assert.equal(verified.userId, membership.user.id);
     assert.equal(verified.activeMemberships.length, 1);
     assert.equal(await client.session.count({ where: { userId: membership.user.id } }), 0);
@@ -193,7 +193,7 @@ describe('F-003 acceptance', { concurrency: 1 }, () => {
     const membershipA = await provisionMembership(client, { companyId: first.id, email: address });
     await provisionMembership(client, { companyId: second.id, email: address });
     await seedCurrentPassword(membershipA.user.id, 'abcdef1!');
-    const verified = await verifyPasswordLogin(client, analytics, { email: address, password: 'abcdef1!' });
+    const verified = await verifyPasswordLogin(client, { email: address, password: 'abcdef1!' });
     assert.equal(verified.activeMemberships.length, 2);
     assert.equal(await client.session.count({ where: { userId: membershipA.user.id } }), 0);
   });
@@ -233,7 +233,7 @@ describe('F-003 acceptance', { concurrency: 1 }, () => {
     await seedCurrentPassword(membership.user.id, 'abcdef1!');
 
     for (const provider of ['google', 'microsoft']) {
-      const finished = await completeProviderAuthentication(client, analytics, {
+      const finished = await completeProviderAuthentication(client, {
         provider,
         providerSubject: `${provider}-subject-${address}`,
         email: address.toUpperCase(),
@@ -254,7 +254,7 @@ describe('F-003 acceptance', { concurrency: 1 }, () => {
     const links = await client.linkedLogin.findMany({ where: { userId: membership.user.id } });
     assert.equal(links.length, 2);
     assert.equal(links.some((link) => link.providerSubject === address), false);
-    const again = await completeProviderAuthentication(client, analytics, {
+    const again = await completeProviderAuthentication(client, {
       provider: 'google',
       providerSubject: `google-subject-${address}`,
       email: address,
@@ -270,7 +270,7 @@ describe('F-003 acceptance', { concurrency: 1 }, () => {
     const { analytics } = recorder();
     const address = email('unverified');
     await assert.rejects(
-      () => completeProviderAuthentication(client, analytics, {
+      () => completeProviderAuthentication(client, {
         provider: 'google',
         providerSubject: `sub-${address}`,
         email: address,
@@ -293,7 +293,7 @@ describe('F-003 acceptance', { concurrency: 1 }, () => {
     const membershipA = await provisionMembership(client, { companyId: companyA.id, email: address });
     const membershipB = await provisionMembership(client, { companyId: companyB.id, email: address });
     await seedCurrentPassword(membershipA.user.id, 'abcdef1!');
-    await completeProviderAuthentication(client, analytics, {
+    await completeProviderAuthentication(client, {
       provider: 'microsoft',
       providerSubject: `ms-${address}`,
       email: address,
